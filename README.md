@@ -16,5 +16,6 @@ Check out [the pytube documentation](https://pytube.io/en/latest/) for descripti
 ## Dependencies
 - [Python 3.x](https://www.python.org/downloads/)
 - [pytube](https://github.com/pytube/pytube)
+- [pip](https://pypi.org/project/pip/)
 
-The included batch file can install/reinstall pytube for you, which really only saves you one trip to your Terminal, but it's a saved step nonetheless.
+The included batch file uses pip to install/reinstall pytube for you, which really only saves you one trip to your Terminal, but it's a saved step nonetheless.

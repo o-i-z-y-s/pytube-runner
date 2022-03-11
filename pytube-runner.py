@@ -11,6 +11,16 @@ class PytubeRunner:
       time.sleep(1)
       print(str(i)+"...", end=" ")
     time.sleep(0.5)
+  
+  def reinstallPytube(self):
+    print("") # Whitespace for readability.
+    pipCheck = subprocess.Popen('python -c "import pip"')
+    if pipCheck.wait() == 0:
+      reinstall = subprocess.Popen('pip install --upgrade --force-reinstall pytube', start_new_session=True)
+      reinstall.wait()
+      print("\nPlease relaunch the script.")
+    else: # Likely a ModuleNotFoundError.
+      print("You don't have pip installed for this version of Python! The download link is in the README file.")
 
   def run(self):
     url = input('> Paste a YouTube video url here: ')
@@ -33,12 +43,7 @@ class PytubeRunner:
 
       confirmation = input("\n> Reinstall pytube now? [y/n]: ")
       if confirmation.lower() == "y":
-        print("")
-
-        reinstall = subprocess.Popen('pip install --upgrade --force-reinstall pytube', start_new_session=True)
-        reinstall.wait()
-
-        print("\nPlease relaunch the script.")
+        self.reinstallPytube()
       else: 
         print("\nPlease relaunch after checking params and/or installing a newer version of pytube.")
       
