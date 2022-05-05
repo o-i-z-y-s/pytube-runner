@@ -1,5 +1,6 @@
 # pytube-runner
 This is a Python CLI script for downloading individual videos from YouTube. The [pytube](https://github.com/pytube/pytube) project is the core of this runner, so naturally pytube is required for it to function.
+EDIT 5/5/22: There is a current bug in pytube breaking functionality. [Here is the fix](https://github.com/pytube/pytube/issues/1293#issuecomment-1103362815), and it requires you to copy-paste a couple of lines into the cipher.py file located in your pytube installation.
 
 ## Why?
 Typing out function calls in a text editor and pasting them into a CLI is tedious, especially when errors are a blackbox and reinstalling pytube is a common troubleshooting method (for a couple reasons).
