@@ -28,11 +28,16 @@ class PytubeRunner:
     try:
       start = time.time()
 
-      # A few notes about this next line (where the magic happens):
-      ## 'progressive=True' will always save audio and video in one file, but will only go up to 720p. 'adaptive=True' will download higher resolutions than 'progressive=True', but I don't guarantee it will have both video and audio in one file.
+      # This line is for age restricted videos. The script can't handle them without authenticating your cookie through an account.
+      # yt = YouTube("\'"+url+"\'", use_oauth=True, allow_oauth_cache=True)
+
+      # If you aren't trying to snag age restricted content, use this one.
+      yt = YouTube("\'"+url+"\'")
+
+      # A couple notes about this next line (where the magic happens):
       ## You can delete '.get_highest_resolution()' and set "resolution='360p'" (or whatever resolution you like) inside '.filter()'.
       ## 'output_path' can be anything you'd like! './' creates the 'Ripped Videos' folder wherever the script file is.
-      YouTube("\'"+url+"\'").streams.filter(progressive=True,file_extension='mp4').get_highest_resolution().download(output_path="./Ripped Videos/")
+      yt.streams.filter().get_highest_resolution().download(output_path="./Ripped Videos/")
 
       end = time.time()
       print("All done. Took "+str(round(end-start,2))+"s\n")
