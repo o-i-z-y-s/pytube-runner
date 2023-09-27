@@ -1,6 +1,7 @@
 import time
 import subprocess
 from pytube import YouTube
+from pytube import Playlist
 from pytube.exceptions import RegexMatchError, VideoUnavailable, MembersOnly, VideoRegionBlocked, VideoPrivate, LiveStreamError, RecordingUnavailable
 
 class PytubeRunner:
@@ -23,7 +24,7 @@ class PytubeRunner:
       print("You don't have pip installed for this version of Python! The download link is in the README file.")
 
   def run(self):
-    url = input('> Paste a YouTube video url here: ')
+    url = input('> Paste a YouTube url here: ')
 
     try:
       start = time.time()
@@ -38,6 +39,15 @@ class PytubeRunner:
       ## You can delete '.get_highest_resolution()' and set "resolution='360p'" (or whatever resolution you like) inside '.filter()'.
       ## 'output_path' can be anything you'd like! './' creates the 'Ripped Videos' folder wherever the script file is.
       yt.streams.filter().get_highest_resolution().download(output_path="./Ripped Videos/")
+
+      # To grab an entire playlist, use this block instead of the code above!
+      # playlist = Playlist("\'"+url+"\'")
+      # for video in playlist.videos:
+      #   video.streams.first().download()
+      # for vid_url in playlist.video_urls:
+        # yt = YouTube("\'"+vid_url+"\'")
+        # yt.streams.filter().get_highest_resolution().download(output_path="./Ripped Videos/")
+
 
       end = time.time()
       print("All done. Took "+str(round(end-start,2))+"s\n")
@@ -81,6 +91,17 @@ class PytubeRunner:
     except VideoUnavailable:
       print("The video is unavailable.")
       self.run()
+    
+    except:
+      print("\nUncaught error! It could be that YouTube broke pytube again, so you need to reinstall it, update cipher.py with the version in this repo, or wait for a fixed version.")
+
+      confirmation = input("\n> Reinstall pytube now? (Remember to replace cipher.py again!) [y/n]: ")
+      if confirmation.lower() == "y":
+        self.reinstallPytube()
+      else: 
+        print("\nPlease relaunch after checking params and/or installing a newer version of pytube.")
+      
+      self.close()
 
 if __name__ == "__main__":
   runner = PytubeRunner()
