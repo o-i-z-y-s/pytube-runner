@@ -1,3 +1,4 @@
+import math
 import time
 import subprocess
 from pytube import YouTube
@@ -12,7 +13,7 @@ class PytubeRunner:
       time.sleep(1)
       print(str(i)+"...", end=" ")
     time.sleep(0.5)
-  
+      
   def reinstallPytube(self):
     print("") # Whitespace for readability.
     pipCheck = subprocess.Popen('python -c "import pip"')
@@ -23,45 +24,63 @@ class PytubeRunner:
     else: # Likely a ModuleNotFoundError.
       print("You don't have pip installed for this version of Python! The download link is in the README file.")
 
+  def confirmReinstall(self):
+    confirmation = input("\n> Reinstall pytube now? (Remember to replace cipher.py again!) [y/n]: ")
+    if confirmation.lower() == "y":
+      self.reinstallPytube()
+    else: 
+      print("\nPlease relaunch after checking params, installing a newer version of pytube, and/or replacing cipher.py again.")
+
+  def getAgeRestricted(self, url):
+    return YouTube("\'"+url+"\'", use_oauth=True, allow_oauth_cache=True)
+
+  def getVideo(self, youtubeObj):
+    # You can delete '.get_highest_resolution()' and set "resolution='360p'" (or whatever resolution you like) inside '.filter()'.
+    # 'output_path' can be anything you'd like! './' tells the script to create the 'Ripped Videos' folder wherever the script file is.
+    youtubeObj.streams.filter().get_highest_resolution().download(output_path="./Ripped Videos/")
+
+  def getPlaylist(self, url):
+    playlist = Playlist("\'"+url+"\'")
+    for video in playlist.videos:
+      video.streams.first().download()
+    for vid_url in playlist.video_urls:
+      yt = YouTube("\'"+vid_url+"\'")
+      self.download(yt)
+  
+  def getTime(self, seconds):
+    mins = math.floor(seconds / 60)
+    secs = round(seconds % 60, 2)
+
+    if mins == 0:
+      return str(secs) + "s"
+    else:
+      return str(mins) + "m " + str(secs) + "s"
+
   def run(self):
     url = input('> Paste a YouTube url here: ')
 
     try:
       start = time.time()
 
-      # This line is for age restricted videos. The script can't handle them without authenticating your cookie through an account.
-      # yt = YouTube("\'"+url+"\'", use_oauth=True, allow_oauth_cache=True)
+      # The script can't handle age restricted videos without authenticating your account.
+      # yt = self.getAgeRestricted(url)
 
-      # If you aren't trying to snag age restricted content, use this one.
+      # If you aren't trying to snag age restricted content, use this line.
       yt = YouTube("\'"+url+"\'")
 
-      # A couple notes about this next line (where the magic happens):
-      ## You can delete '.get_highest_resolution()' and set "resolution='360p'" (or whatever resolution you like) inside '.filter()'.
-      ## 'output_path' can be anything you'd like! './' creates the 'Ripped Videos' folder wherever the script file is.
-      yt.streams.filter().get_highest_resolution().download(output_path="./Ripped Videos/")
+      # To grab a playlist, use this line instead of the one below.
+      # self.getPlaylist(url)
 
-      # To grab an entire playlist, use this block instead of the code above!
-      # playlist = Playlist("\'"+url+"\'")
-      # for video in playlist.videos:
-      #   video.streams.first().download()
-      # for vid_url in playlist.video_urls:
-        # yt = YouTube("\'"+vid_url+"\'")
-        # yt.streams.filter().get_highest_resolution().download(output_path="./Ripped Videos/")
-
+      # The single video download function.
+      self.getVideo(yt)
 
       end = time.time()
-      print("All done. Took "+str(round(end-start,2))+"s\n")
+      print("All done. Took " + self.getTime(end-start) + "\n")
       self.run()
 
     except AttributeError:
       print("\nAttribute Error! Two things can cause this to happen:\n1) You modified the params in .filter() and they're failing.\n2) YouTube broke pytube again, so you need to reinstall it or wait for a fixed version.")
-
-      confirmation = input("\n> Reinstall pytube now? [y/n]: ")
-      if confirmation.lower() == "y":
-        self.reinstallPytube()
-      else: 
-        print("\nPlease relaunch after checking params and/or installing a newer version of pytube.")
-      
+      self.confirmReinstall()
       self.close()
     
     except RegexMatchError:
@@ -94,13 +113,7 @@ class PytubeRunner:
     
     except:
       print("\nUncaught error! It could be that YouTube broke pytube again, so you need to reinstall it, update cipher.py with the version in this repo, or wait for a fixed version.")
-
-      confirmation = input("\n> Reinstall pytube now? (Remember to replace cipher.py again!) [y/n]: ")
-      if confirmation.lower() == "y":
-        self.reinstallPytube()
-      else: 
-        print("\nPlease relaunch after checking params and/or installing a newer version of pytube.")
-      
+      self.confirmReinstall()
       self.close()
 
 if __name__ == "__main__":
