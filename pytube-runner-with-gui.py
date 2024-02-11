@@ -28,7 +28,7 @@ class GUI:
     lowQualityRadio = ctk.CTkRadioButton(resolutionFrame, text="360p", variable=getHQ, value=0, width=60, radiobutton_width=15, radiobutton_height=15)
     highQualityRadio = ctk.CTkRadioButton(resolutionFrame, text="720p", variable=getHQ, value=1, width=50, radiobutton_width=15, radiobutton_height=15)
 
-    output = ctk.CTkTextbox(window, height=125, width=250)
+    output = ctk.CTkTextbox(window, wrap=ctk.WORD, height=125, width=300)
     runButton = ctk.CTkButton(window, text="Run", command=lambda: self.runScript(runButton, getHQ, urlEntry, isPlaylist, isAgeRestricted, output))
 
     urlFrame.pack(padx=10, pady=5)
@@ -44,7 +44,7 @@ class GUI:
     runButton.pack()
     output.pack(side="bottom")
 
-    output.insert(ctk.END, "Note: The console will be frozen while it\ndownloads (for now).\n")
+    output.insert(ctk.END, "Note: The console will be frozen while it downloads (for now).\n")
     window.mainloop()
 
   def getVal(self, component):
