@@ -9,7 +9,7 @@ from pytube.exceptions import RegexMatchError, VideoUnavailable, MembersOnly, Vi
 class GUI:
 
   def __init__(self, window):
-    window.geometry("350x275")
+    window.geometry("350x300")
     window.title("Pytube Runner")
 
     urlFrame = ctk.CTkFrame(window)
@@ -23,8 +23,13 @@ class GUI:
     isAgeRestricted = ctk.BooleanVar()
     ageRestrictedChk = ctk.CTkCheckBox(optionsFrame, text="Age Restricted?", state=tk.DISABLED, variable=isAgeRestricted, onvalue=True, offvalue=False, checkbox_width=15, checkbox_height=15)
 
+    resolutionFrame = ctk.CTkFrame(window)
+    getHQ = ctk.IntVar()
+    lowQualityRadio = ctk.CTkRadioButton(resolutionFrame, text="360p", variable=getHQ, value=0, width=60, radiobutton_width=15, radiobutton_height=15)
+    highQualityRadio = ctk.CTkRadioButton(resolutionFrame, text="720p", variable=getHQ, value=1, width=50, radiobutton_width=15, radiobutton_height=15)
+
     output = ctk.CTkTextbox(window, height=125, width=250)
-    runButton = ctk.CTkButton(window, text="Run", command=lambda: self.runScript(window, runButton, urlEntry, isPlaylist, isAgeRestricted, output))
+    runButton = ctk.CTkButton(window, text="Run", command=lambda: self.runScript(runButton, getHQ, urlEntry, isPlaylist, isAgeRestricted, output))
 
     urlFrame.pack(padx=10, pady=5)
     urlLabel.pack(side="left", padx=5)
@@ -33,6 +38,9 @@ class GUI:
     notice.pack(side="top", padx=10)
     playlistChk.pack(side="left", padx=5)
     ageRestrictedChk.pack(side="right", padx=5)
+    resolutionFrame.pack(pady=5)
+    lowQualityRadio.pack(side="left")
+    highQualityRadio.pack(side="right")
     runButton.pack()
     output.pack(side="bottom")
 
@@ -42,14 +50,15 @@ class GUI:
   def getVal(self, component):
     return component.get()
     
-  def runScript(self, runButton, urlEntry, playlistVar, ageRestrictedVar, output):
+  def runScript(self, runButton, getHQ, urlEntry, playlistVar, ageRestrictedVar, output):
     runButton["state"] = "disabled"
     url = self.getVal(urlEntry)
+    quality = self.getVal(getHQ)
     isPlaylist, isAgeRestricted = self.getVal(playlistVar), self.getVal(ageRestrictedVar)
 
     runner = PytubeRunner()
     # output.insert(ctk.END, "Starting, please wait...\n")
-    runner.run(url, isPlaylist, isAgeRestricted, output)
+    runner.run(url, quality, isPlaylist, isAgeRestricted, output)
     # threading seems overkill for this, but keeping button toggling for now...
     runButton["state"] = 'normal'
 
@@ -59,19 +68,21 @@ class PytubeRunner:
   def getAgeRestricted(self, url):
     return YouTube("\'"+url+"\'", use_oauth=True, allow_oauth_cache=True)
 
-  def getVideo(self, youtubeObj):
-    # You can delete '.get_highest_resolution()' and set "resolution='360p'" (or whatever resolution you like) inside '.filter()'.
+  def getVideo(self, youtubeObj, quality):
     # 'output_path' can be anything you'd like! './' tells the script to create the 'Ripped Videos' folder wherever the script file is.
-    youtubeObj.streams.filter().get_highest_resolution().download(output_path="./Ripped Videos/")
+    if quality == 0:
+      youtubeObj.streams.filter(res='360p').first().download(output_path="./Ripped Videos/")
+    else:
+      youtubeObj.streams.filter().get_highest_resolution().download(output_path="./Ripped Videos/")
 
-  def getPlaylist(self, url):
+  def getPlaylist(self, url, quality):
     playlist = Playlist("\'"+url+"\'")
-    for video in playlist.videos:
-      print(video)
-      video.streams.first().download()
+    # for video in playlist.videos:
+    #   print(video)
+    #   video.streams.first().download()
     for vid_url in playlist.video_urls:
       print(vid_url)
-      self.getVideo(YouTube("\'"+vid_url+"\'"))
+      self.getVideo(YouTube("\'"+vid_url+"\'"), quality)
   
   def getTime(self, seconds):
     mins = math.floor(seconds / 60)
@@ -82,17 +93,16 @@ class PytubeRunner:
     else:
       return str(mins) + "m " + str(secs) + "s"
 
-  def run(self, url, isPlaylist, isAgeRestricted, output):
+  def run(self, url, quality, isPlaylist, isAgeRestricted, output):
     try:
       start = time.time()
 
-      # The script can't handle age restricted videos without authenticating an account.
       if isPlaylist: 
-        self.getPlaylist(url)
+        self.getPlaylist(url, quality)
       elif isAgeRestricted:
-        self.getVideo(self.getAgeRestricted(url))
+        self.getVideo(self.getAgeRestricted(url), quality)
       else:
-        self.getVideo(YouTube("\'"+url+"\'"))
+        self.getVideo(YouTube("\'"+url+"\'"), quality)
 
       end = time.time()
 
@@ -132,7 +142,7 @@ class PytubeRunner:
       output.insert(ctk.END, "\nUncaught error! It could be that YouTube broke pytube again. You may need to reinstall it, update cipher.py with the version in this repo, or wait for a fixed version.")
       return
 
-    output.insert(ctk.END, "All done. Took " + self.getTime(end-start) + ".\n")
+    output.insert(ctk.END, "\nAll done. Took " + self.getTime(end-start) + ".")
 
 
 if __name__ == "__main__":

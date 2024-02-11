@@ -20,6 +20,7 @@ Check out [the pytube documentation](https://pytube.io/en/latest/) for descripti
 *CLI version only.* The EXE version has no dependencies.
 - [Python 3.x](https://www.python.org/downloads/)
 - [pytube](https://github.com/pytube/pytube)
+- [customtkinter](https://github.com/tomschimansky/customtkinter)
 - [pip](https://pypi.org/project/pip/)
 
 The included batch file uses pip to install/reinstall pytube for you, which really only saves you one trip to your terminal, but it's a saved step nonetheless.
