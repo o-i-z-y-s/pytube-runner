@@ -1,6 +1,8 @@
 # pytube-runner
 This is a Python script for downloading individual videos from YouTube. This project includes both a standalone EXE as well as the CLI version.
 
+The EXE is packaged using [Auto Py To Exe](https://github.com/brentvollebregt/auto-py-to-exe), which itself uses [Pyinstaller](https://github.com/pyinstaller/pyinstaller), so a false positive in your antivirus is probable. This is a known issue and has been a known issue for a long time, due to malicious actors also using Pyinstaller to package their creations. Pyinstaller itself plays no malicious role, is open source, and is in use by over 55k users at the time of writing this.
+
 *CLI version only*: The [pytube](https://github.com/pytube/pytube) project is the core of this script, so naturally pytube is required for it to function.
 
 **NOTE:** There is currently a regex bug in pytube causing download failures. However, I have repaired the file responsible and included it in this repo, `cipher.py`. Replace your version of this file with the copy provided; you can find yours at `<Python directory)\Lib\site-packages\pytube>`. [The fix is described here](https://github.com/pytube/pytube/issues/1293#issuecomment-1103362815).
