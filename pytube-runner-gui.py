@@ -139,7 +139,7 @@ class PytubeRunner:
       return
     
     except:
-      output.insert(ctk.END, "\nUncaught error! It could be that YouTube broke pytube again. You may need to reinstall it, update cipher.py with the version in this repo, or wait for a fixed version.")
+      output.insert(ctk.END, "\nUncaught error! Typically this means that YouTube either doesn't like this link or they broke pytube again. If you're using the CLI version, you may need to update cipher.py with the version in this repo or wait for a fixed version.")
       return
 
     output.insert(ctk.END, "\nAll done. Took " + self.getTime(end-start) + ".")
